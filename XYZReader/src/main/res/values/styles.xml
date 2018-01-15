@@ -27,4 +27,26 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="MaterialXYZReader.Text" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/blackPrimaryText</item>
+    </style>
+
+    <style name="MaterialXYZReader.Text.Card.PrimaryText" parent="MaterialXYZReader.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:maxLines">4</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="MaterialXYZReader.Text.Card.SecondaryText" parent="MaterialXYZReader.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/blackSecondaryText</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+
 </resources>
