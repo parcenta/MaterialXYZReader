@@ -38,6 +38,7 @@
                     android:src="@drawable/logo"
                     android:layout_gravity="bottom"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:contentDescription="@string/app_name" />
 
             </android.support.design.widget.CollapsingToolbarLayout>
@@ -49,18 +50,14 @@
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:scrollbarStyle="outsideOverlay"
-                android:paddingTop="116dp"
-                android:paddingLeft="@dimen/list_side_margin"
-                android:paddingRight="@dimen/list_side_margin"
-                android:paddingBottom="28dp"
                 />
         </android.support.v4.widget.SwipeRefreshLayout>
 

@@ -16,8 +16,9 @@
         android:orientation="vertical">
 
             <!--suppress AndroidLintContentDescription -->
-        <com.example.xyzreader.ui.DynamicHeightNetworkImageView
+        <com.example.xyzreader.ui.customViews.DynamicHeightNetworkImageView
             android:id="@+id/thumbnail"
+            android:transitionName="@string/image_view_list_to_detail_transition_name"
             android:layout_width="match_parent"
             android:layout_height="267dp"
             android:background="@color/photo_placeholder"
