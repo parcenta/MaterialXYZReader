@@ -105,7 +105,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
         // For SharedView Transition.
         ViewCompat.setTransitionName(holder.thumbnailView, mContext.getString(R.string.image_view_list_to_detail_transition_name));
-        holder.thumbnailView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

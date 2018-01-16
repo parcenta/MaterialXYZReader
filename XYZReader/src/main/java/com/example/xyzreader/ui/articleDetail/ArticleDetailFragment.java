@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -64,6 +65,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int mTopInset;
     private View mPhotoContainerView;
     private ImageView mPhotoView;
+    private Button mShowMoreBodyText;
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
@@ -73,6 +75,9 @@ public class ArticleDetailFragment extends Fragment implements
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+
+    private static String fullBodyText;
+    private static boolean showFullBodyText;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -161,6 +166,15 @@ public class ArticleDetailFragment extends Fragment implements
                         .setType("text/plain")
                         .setText("Some sample text")
                         .getIntent(), getString(R.string.action_share)));
+            }
+        });
+
+        mShowMoreBodyText = (Button) mRootView.findViewById(R.id.show_more_detail);
+        mShowMoreBodyText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFullBodyText = true;
+                bindViews();
             }
         });
 
@@ -255,7 +269,8 @@ public class ArticleDetailFragment extends Fragment implements
                                 + "</font>"));
 
             }
-            //bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+
+
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -276,6 +291,18 @@ public class ArticleDetailFragment extends Fragment implements
 
                         }
                     });
+
+
+            // Manage the full bodytext to be shown. We dont want to show the whole mody text at first.
+            fullBodyText = mCursor.getString(ArticleLoader.Query.BODY);
+
+            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0,300) + "...";
+            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n\r\n","<br/><br/>");
+            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n"," ");
+            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\n","<br/>");
+            bodyView.setText(Html.fromHtml(bodyTextToBeShown));
+
+
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");

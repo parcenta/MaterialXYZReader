@@ -24,8 +24,7 @@
         </activity>
 
         <activity
-            android:name=".ui.articleDetail.ArticleDetailActivity"
-            android:parentActivityName=".ui.articleList.ArticleListActivity">
+            android:name=".ui.articleDetail.ArticleDetailActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
