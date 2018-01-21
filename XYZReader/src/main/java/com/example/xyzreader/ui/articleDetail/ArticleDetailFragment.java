@@ -53,6 +53,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
+    private static final String SHOWING_FULL_BODY_TEXT_BOOLEAN = "SHOWING_FULL_BODY_TEXT_BOOLEAN";
 
     private Cursor mCursor;
     private long mItemId;
@@ -98,6 +99,8 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        showFullBodyText = false;
+
         // SharedView transition for ViewPagers. Source: http://mikescamell.com/shared-element-transitions-part-4-recyclerview/
         postponeEnterTransition();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -122,6 +125,9 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState!=null && savedInstanceState.containsKey(SHOWING_FULL_BODY_TEXT_BOOLEAN))
+            showFullBodyText = savedInstanceState.getBoolean(SHOWING_FULL_BODY_TEXT_BOOLEAN,false);
 
         // In support library r8, calling initLoader for a fragment in a FragmentPagerAdapter in
         // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
@@ -174,7 +180,8 @@ public class ArticleDetailFragment extends Fragment implements
             @Override
             public void onClick(View view) {
                 showFullBodyText = true;
-                bindViews();
+                mShowMoreBodyText.setVisibility(View.GONE);
+                showBodyText();
             }
         });
 
@@ -240,10 +247,6 @@ public class ArticleDetailFragment extends Fragment implements
         TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
         TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
-        TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-
-
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -294,20 +297,13 @@ public class ArticleDetailFragment extends Fragment implements
 
 
             // Manage the full bodytext to be shown. We dont want to show the whole mody text at first.
-            fullBodyText = mCursor.getString(ArticleLoader.Query.BODY);
-
-            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0,300) + "...";
-            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n\r\n","<br/><br/>");
-            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n"," ");
-            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\n","<br/>");
-            bodyView.setText(Html.fromHtml(bodyTextToBeShown));
+            showBodyText();
 
 
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
             bylineView.setText("N/A" );
-            bodyView.setText("N/A");
         }
     }
 
@@ -350,5 +346,29 @@ public class ArticleDetailFragment extends Fragment implements
         return mIsCard
                 ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
                 : mPhotoView.getHeight() - mScrollY;
+    }
+
+    private void showBodyText(){
+        if (mCursor==null) return;
+
+        fullBodyText = mCursor.getString(ArticleLoader.Query.BODY);
+
+        TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+
+        if (fullBodyText!=null && !fullBodyText.isEmpty()) {
+            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0, 300) + "...";
+            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n\r\n", "<br/><br/>");
+            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n", " ");
+            bodyTextToBeShown = bodyTextToBeShown.replaceAll("\n", "<br/>");
+            bodyView.setText(Html.fromHtml(bodyTextToBeShown));
+        }else
+            bodyView.setText("N/A");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SHOWING_FULL_BODY_TEXT_BOOLEAN,showFullBodyText);
     }
 }
