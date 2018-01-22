@@ -99,13 +99,6 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // SharedView transition for ViewPagers. Source: http://mikescamell.com/shared-element-transitions-part-4-recyclerview/
-        postponeEnterTransition();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
-        }
-        setSharedElementReturnTransition(null);
-
         // Set this flag initially as false.
         showFullBodyText = false;
 
@@ -277,7 +270,6 @@ public class ArticleDetailFragment extends Fragment implements
                                         .setBackgroundColor(mMutedColor);
                                 updateStatusBar();
                             }
-                            startPostponedEnterTransition();
                         }
 
                         @Override

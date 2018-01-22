@@ -26,6 +26,7 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     tools:background="@mipmap/ic_launcher"
+                    android:transitionName="@string/image_view_list_to_detail_transition_name"
                      />
 
                 <View
