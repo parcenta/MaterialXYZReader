@@ -41,6 +41,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
@@ -57,13 +58,19 @@ public class ArticleDetailActivity extends AppCompatActivity
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
         mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
 
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+
+        // Source: https://developer.android.com/reference/android/support/v4/view/ViewPager.html#addOnPageChangeListener(android.support.v4.view.ViewPager.OnPageChangeListener)
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
                 mUpButton.animate()
                         .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
                         .setDuration(300);
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
 
             @Override
@@ -119,15 +126,21 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         // Select the start ID
         if (mStartId > 0) {
-            mCursor.moveToFirst();
-            // TODO: optimize
-            while (!mCursor.isAfterLast()) {
-                if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = mCursor.getPosition();
-                    mPager.setCurrentItem(position, false);
-                    break;
-                }
-                mCursor.moveToNext();
+
+            if(mCursor!=null && mCursor.getCount()>0){
+                // First set the cursor in the first element.
+                mCursor.moveToFirst();
+
+                // Now check for the selected id in the cursor.
+                do{
+                    long articleId = mCursor.getLong(ArticleLoader.Query._ID);
+                    if ( articleId == mStartId) {
+                        final int position = mCursor.getPosition();
+                        mPager.setCurrentItem(position, false);
+                        break;
+                    }
+                }while (mCursor.moveToNext());
+
             }
             mStartId = 0;
         }
@@ -155,6 +168,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
+
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {

@@ -99,14 +99,15 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        showFullBodyText = false;
-
         // SharedView transition for ViewPagers. Source: http://mikescamell.com/shared-element-transitions-part-4-recyclerview/
         postponeEnterTransition();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
         }
         setSharedElementReturnTransition(null);
+
+        // Set this flag initially as false.
+        showFullBodyText = false;
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
@@ -170,7 +171,7 @@ public class ArticleDetailFragment extends Fragment implements
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText("Hey. I recommend reading this book...")
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -185,18 +186,8 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-        bindViews();
         updateStatusBar();
         return mRootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mPhotoView.setTransitionName(getContext().getString(R.string.image_view_list_to_detail_transition_name));
-        }
     }
 
     private void updateStatusBar() {
@@ -273,7 +264,6 @@ public class ArticleDetailFragment extends Fragment implements
 
             }
 
-
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -287,14 +277,14 @@ public class ArticleDetailFragment extends Fragment implements
                                         .setBackgroundColor(mMutedColor);
                                 updateStatusBar();
                             }
+                            startPostponedEnterTransition();
                         }
 
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
-
+                            startPostponedEnterTransition();
                         }
                     });
-
 
             // Manage the full bodytext to be shown. We dont want to show the whole mody text at first.
             showBodyText();
@@ -357,7 +347,7 @@ public class ArticleDetailFragment extends Fragment implements
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (fullBodyText!=null && !fullBodyText.isEmpty()) {
-            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0, 300) + "...";
+            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0, 500) + "...";
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n\r\n", "<br/><br/>");
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n", " ");
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\n", "<br/>");

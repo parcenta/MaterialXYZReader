@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -102,23 +101,12 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
 
-
-        // For SharedView Transition.
-        ViewCompat.setTransitionName(holder.thumbnailView, mContext.getString(R.string.image_view_list_to_detail_transition_name));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-            // Transition with shared view.
-            Bundle bundle = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                ArticleListActivity activity = (ArticleListActivity) view.getContext();
-                bundle = ActivityOptions.makeSceneTransitionAnimation(activity,holder.thumbnailView,holder.thumbnailView.getTransitionName()).toBundle();
-            }
-
-            // Launching Detail Activity.
-            Intent activityIntent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
-                mContext.startActivity(activityIntent,bundle);
+                // Launching Detail Activity.
+                Intent activityIntent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
+                mContext.startActivity(activityIntent);
             }
         });
 
