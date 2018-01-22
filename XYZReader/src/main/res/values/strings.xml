@@ -9,8 +9,6 @@
 
     <string name="up">Up</string>
 
-    <string name="image_view_list_to_detail_transition_name">image_view_list_to_detail_transition_name</string>
-
     <string name="show_more">Show full text</string>
 
 </resources>

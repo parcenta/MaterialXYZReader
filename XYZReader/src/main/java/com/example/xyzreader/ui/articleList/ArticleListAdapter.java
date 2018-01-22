@@ -109,15 +109,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 Bundle bundle = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     ArticleListActivity activity = (ArticleListActivity) mContext;
-                    bundle = ActivityOptions.makeSceneTransitionAnimation(activity,holder.thumbnailView,holder.thumbnailView.getTransitionName()).toBundle();
-                    //bundle = ActivityOptions.makeSceneTransitionAnimation(activity).toBundle();
+                    bundle = ActivityOptions.makeSceneTransitionAnimation(activity).toBundle();
                 }
 
 
                 // Launching Detail Activity.
                 Intent activityIntent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
                 mContext.startActivity(activityIntent,bundle);
-                //mContext.startActivity(activityIntent);
             }
         });
 

@@ -15,7 +15,6 @@ import java.util.GregorianCalendar;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
@@ -24,7 +23,6 @@ import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
-import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,6 +108,8 @@ public class ArticleDetailFragment extends Fragment implements
         mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
                 R.dimen.detail_card_top_margin);
         setHasOptionsMenu(true);
+
+
     }
 
     public ArticleDetailActivity getActivityCast() {
@@ -133,6 +133,7 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
                 mRootView.findViewById(R.id.draw_insets_frame_layout);
@@ -274,7 +275,6 @@ public class ArticleDetailFragment extends Fragment implements
 
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
-                            startPostponedEnterTransition();
                         }
                     });
 
@@ -286,6 +286,14 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
             bylineView.setText("N/A" );
+        }
+
+
+        // -------------------------------------------------------------
+        // Start the postponed Enter Transition of the parent activity.
+        // -------------------------------------------------------------
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivityCast().startPostponedEnterTransition();
         }
     }
 
@@ -308,9 +316,8 @@ public class ArticleDetailFragment extends Fragment implements
             Log.e(TAG, "Error reading item detail cursor");
             mCursor.close();
             mCursor = null;
-        }
-
-        bindViews();
+        }else
+            bindViews();
     }
 
     @Override
@@ -339,7 +346,7 @@ public class ArticleDetailFragment extends Fragment implements
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (fullBodyText!=null && !fullBodyText.isEmpty()) {
-            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0, 500) + "...";
+            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0, 2000) + "...";
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n\r\n", "<br/><br/>");
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n", " ");
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\n", "<br/>");

@@ -1,5 +1,4 @@
 <com.example.xyzreader.ui.customViews.DrawInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/draw_insets_frame_layout"
     android:layout_width="match_parent"
@@ -26,7 +25,6 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     tools:background="@mipmap/ic_launcher"
-                    android:transitionName="@string/image_view_list_to_detail_transition_name"
                      />
 
                 <View
@@ -102,15 +100,15 @@
     </com.example.xyzreader.ui.customViews.ObservableScrollView>
 
     <ImageButton android:id="@+id/share_fab"
-        android:stateListAnimator="@anim/fab_state_list_anim"
+        android:stateListAnimator="@animator/fab_state_list_animator"
         android:background="@drawable/add_fab_background"
         android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:src="@drawable/ic_share"
-        android:elevation="@dimen/fab_elevation"
+        android:elevation="@dimen/fab_resting_translation_z"
         android:contentDescription="@string/action_share" />
 
 </com.example.xyzreader.ui.customViews.DrawInsetsFrameLayout>
