@@ -17,7 +17,6 @@
 
 <resources>
     <color name="photo_placeholder">#ccc</color>
-    <color name="ltgray">#ffe0e0e0</color>
 
     <!-- Colors generated using: https://www.materialpalette.com/blue/red -->
     <color name="colorPrimary">#2196F3</color>

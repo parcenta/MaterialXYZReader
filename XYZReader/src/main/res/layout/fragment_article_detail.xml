@@ -1,5 +1,6 @@
 <com.example.xyzreader.ui.customViews.DrawInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/draw_insets_frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -99,16 +100,17 @@
         </FrameLayout>
     </com.example.xyzreader.ui.customViews.ObservableScrollView>
 
-    <ImageButton android:id="@+id/share_fab"
-        android:stateListAnimator="@animator/fab_state_list_animator"
-        android:background="@drawable/add_fab_background"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_share"
-        android:elevation="@dimen/fab_resting_translation_z"
-        android:contentDescription="@string/action_share" />
+        android:contentDescription="@string/action_share"
+
+        app:fabSize="normal"
+        app:elevation="@dimen/fab_resting_elevation"
+        app:pressedTranslationZ="@dimen/fab_pressed_elevation"/>
 
 </com.example.xyzreader.ui.customViews.DrawInsetsFrameLayout>
