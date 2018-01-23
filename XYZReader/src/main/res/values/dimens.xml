@@ -11,6 +11,7 @@
     <dimen name="fab_pressed_elevation">12dp</dimen>
     <dimen name="fab_resting_elevation">6dp</dimen>
     <dimen name="card_view_resting_elevation">2dp</dimen>
+    <dimen name="app_bar_elevation">2dp</dimen>
 
 
 
