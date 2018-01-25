@@ -27,5 +27,7 @@
     <color name="blackSecondaryText">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_blue">#0288D1</color>
 
 </resources>

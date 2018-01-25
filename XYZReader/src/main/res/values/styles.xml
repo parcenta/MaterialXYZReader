@@ -21,6 +21,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="Theme.Bacon.Detail">
@@ -53,6 +55,20 @@
         <item name="android:textSize">@dimen/detail_body_text_size</item>
         <item name="android:textColor">@color/blackSecondaryText</item>
         <item name="android:lineSpacingMultiplier">@fraction/detail_body_line_spacing_multiplier</item>
+    </style>
+
+    <style name="MaterialXYZReader.Text.BookTitle.Expanded" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textSize">@dimen/detail_title_text_size</item>
+        <item name="android:lineSpacingMultiplier">0.9</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingBottom">@dimen/detail_metabar_title_bottom_padding</item>
+    </style>
+
+    <style name="MaterialXYZReader.Text.BookTitle.Collapsed" parent="MaterialXYZReader.Text.BookTitle.Expanded">
+        <item name="android:textSize">16sp</item>
     </style>
 
 
