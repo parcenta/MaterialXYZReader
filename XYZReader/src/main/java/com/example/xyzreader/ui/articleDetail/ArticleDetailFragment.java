@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -59,8 +60,11 @@ public class ArticleDetailFragment extends Fragment implements
     private ImageView mPhotoView;
     private Button mShowMoreBodyText;
     private Toolbar mToolbar;
+    private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private LinearLayout mMetaBar;
+
+
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -70,6 +74,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     private static String fullBodyText;
     private static boolean showFullBodyText;
+    private String articleTitle;
+    private boolean showToolbarTitle = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -151,22 +157,40 @@ public class ArticleDetailFragment extends Fragment implements
         mToolbar                    = (Toolbar) mRootView.findViewById(R.id.toolbar);
         mCollapsingToolbarLayout    = (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar_layout);
         mMetaBar                    = (LinearLayout) mRootView.findViewById(R.id.meta_bar);
+        mAppBarLayout               = (AppBarLayout) mRootView.findViewById(R.id.app_bar_layout);
 
         // Initially set the title as empty...
         mToolbar.setTitle(" ");
         mCollapsingToolbarLayout.setTitle(" ");
 
+        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+
+
+
+                if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange()) {
+                    // Collapsed
+                    showToolbarTitle = true;
+                } else{
+                    // Expanded or semi-expanded.
+                    showToolbarTitle = false;
+                }
+
+                updateToolbarTitle();
+            }
+        });
+
         return mRootView;
     }
 
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
+    private void updateToolbarTitle(){
+        if(mToolbar == null) return;
+
+        if(showToolbarTitle && articleTitle != null && !articleTitle.isEmpty())
+            mToolbar.setTitle(articleTitle);
+        else
+            mToolbar.setTitle(" ");
     }
 
     private Date parsePublishedDate() {
@@ -196,7 +220,9 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
 
-            titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            articleTitle = mCursor.getString(ArticleLoader.Query.TITLE);
+
+            titleView.setText(articleTitle);
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 bylineView.setText(Html.fromHtml(
@@ -239,6 +265,7 @@ public class ArticleDetailFragment extends Fragment implements
             // Manage the full bodytext to be shown. We dont want to show the whole mody text at first.
             showBodyText();
 
+            updateToolbarTitle();
 
         } else {
             mRootView.setVisibility(View.GONE);
