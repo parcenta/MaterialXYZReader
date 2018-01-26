@@ -12,35 +12,32 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
-import com.example.xyzreader.ui.customViews.DynamicHeightNetworkImageView;
-import com.example.xyzreader.ui.helpers.ImageLoaderHelper;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-/**
- * Created by USUARIO on 15/01/2018.
- */
 
 public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.ViewHolder> {
 
-    private String TAG = this.getClass().getSimpleName();
+    private final String TAG = this.getClass().getSimpleName();
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
+    private final SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private final GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
 
-    private Context mContext;
-    private Cursor mCursor;
+    private final Context mContext;
+    private final Cursor mCursor;
 
     public ArticleListAdapter(Context context, Cursor cursor) {
         mContext    = context;
@@ -93,12 +90,14 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                     + "<br/>" + " by "
                     + mCursor.getString(ArticleLoader.Query.AUTHOR)));
         }
-        holder.thumbnailView.setImageUrl(
-            mCursor.getString(ArticleLoader.Query.THUMB_URL),
-            ImageLoaderHelper.getInstance(mContext).getImageLoader()
-        );
 
-        holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+        String imageUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);
+        Picasso.with(mContext)
+                .load(imageUrl)
+                .fit()
+                .centerCrop()
+                .error(R.drawable.empty_detail)
+                .into(holder.thumbnailView);
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -127,13 +126,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        DynamicHeightNetworkImageView thumbnailView;
-        TextView titleView;
-        TextView subtitleView;
+        final ImageView thumbnailView;
+        final TextView titleView;
+        final TextView subtitleView;
 
         ViewHolder(View view) {
             super(view);
-            thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
+            thumbnailView = (ImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
         }

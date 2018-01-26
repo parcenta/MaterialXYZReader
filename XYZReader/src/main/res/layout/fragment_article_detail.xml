@@ -16,7 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_photo_height"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="@dimen/app_bar_elevation">
 
         <!-- app:contentScrim="?attr/colorPrimary" -->
         <android.support.design.widget.CollapsingToolbarLayout
@@ -27,9 +28,11 @@
             app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:scrimAnimationDuration="300"
+            app:collapsedTitleTextAppearance="@style/MaterialXYZReader.Text.BookTitle.Collapsed"
             app:titleEnabled="false">
 
 
+            <!--suppress AndroidLintContentDescription -->
             <ImageView
                 android:id="@+id/photo"
                 android:layout_width="match_parent"
@@ -52,7 +55,7 @@
                 app:layout_collapseMode="pin"
                 app:navigationContentDescription="@string/back"
                 app:navigationIcon="@drawable/ic_material_arrow_back"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

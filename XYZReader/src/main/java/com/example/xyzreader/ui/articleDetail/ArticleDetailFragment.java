@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -25,7 +26,6 @@ import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -33,12 +33,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.ui.helpers.ImageLoaderHelper;
 import com.example.xyzreader.ui.articleList.ArticleListActivity;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -50,7 +49,7 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
-    private static final String SHOWING_FULL_BODY_TEXT_BOOLEAN = "SHOWING_FULL_BODY_TEXT_BOOLEAN";
+    private static final String SHOW_MORE_COUNTER = "SHOW_MORE_COUNTER";
 
     private Cursor mCursor;
     private long mItemId;
@@ -66,16 +65,16 @@ public class ArticleDetailFragment extends Fragment implements
 
 
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
+    private final SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private final GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
 
     private static String fullBodyText;
-    private static boolean showFullBodyText;
     private String articleTitle;
     private boolean showToolbarTitle = false;
+    private int showMoreCounter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -96,8 +95,8 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Set this flag initially as false.
-        showFullBodyText = false;
+        // Set Counter to 1 initially.
+        showMoreCounter = 1;
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
@@ -112,8 +111,8 @@ public class ArticleDetailFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(savedInstanceState!=null && savedInstanceState.containsKey(SHOWING_FULL_BODY_TEXT_BOOLEAN))
-            showFullBodyText = savedInstanceState.getBoolean(SHOWING_FULL_BODY_TEXT_BOOLEAN,false);
+        if(savedInstanceState!=null && savedInstanceState.containsKey(SHOW_MORE_COUNTER))
+            showMoreCounter = savedInstanceState.getInt(SHOW_MORE_COUNTER,1);
 
         // Setting the toolbar in the Parent Activity.
         ArticleDetailActivity parentActivity = (ArticleDetailActivity) getActivity();
@@ -148,8 +147,7 @@ public class ArticleDetailFragment extends Fragment implements
         mShowMoreBodyText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFullBodyText = true;
-                mShowMoreBodyText.setVisibility(View.GONE);
+                showMoreCounter += 1;
                 showBodyText();
             }
         });
@@ -163,21 +161,26 @@ public class ArticleDetailFragment extends Fragment implements
         mToolbar.setTitle(" ");
         mCollapsingToolbarLayout.setTitle(" ");
 
+        // Source: https://stackoverflow.com/questions/31662416/show-collapsingtoolbarlayout-title-only-when-collapsed
+        // NOTE: Im aware there is a warning when using this listener.
+        // (requestLayout() improperly called by android.support.v7.widget.AppCompatTextView and CollapsingToolbatLayout)
         mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            int scrollRange = -1;
+
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
 
-
-
-                if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange()) {
-                    // Collapsed
-                    showToolbarTitle = true;
-                } else{
-                    // Expanded or semi-expanded.
-                    showToolbarTitle = false;
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
                 }
 
-                updateToolbarTitle();
+                if (scrollRange + verticalOffset == 0) {
+                    showToolbarTitle = true;
+                    updateToolbarTitle();
+                } else if(showToolbarTitle) {
+                    showToolbarTitle = false;
+                    updateToolbarTitle();
+                }
             }
         });
 
@@ -243,22 +246,42 @@ public class ArticleDetailFragment extends Fragment implements
 
             }
 
-            ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
+
+            final String imageUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
+
+
+
+            Picasso.with(getActivity())
+                    .load(imageUrl)
+                    .fit()
+                    .centerCrop()
+                    .into(mPhotoView, new Callback() {
                         @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                mMetaBar.setBackgroundColor(mMutedColor);
-                                mCollapsingToolbarLayout.setContentScrimColor(mMutedColor);
+                        public void onSuccess() {
+
+                            // It seems there is a better way to use the Palette (like this // Palette + Picasso: https://medium.com/david-developer/extracting-colors-from-images-integrating-picasso-and-palette-b9ba45c9c418).
+                            // But this way, is the only way is working for me. Also because we need the fit() from above. Any advice will be nice.
+                            try {
+                                Bitmap bitmap = ((BitmapDrawable)mPhotoView.getDrawable()).getBitmap();
+                                if (bitmap != null){
+                                    Palette.from(bitmap)
+                                            .generate(new Palette.PaletteAsyncListener() {
+                                                @Override
+                                                public void onGenerated(Palette p) {
+                                                    mMutedColor = p.getDarkMutedColor(0xFF333333);
+                                                    mMetaBar.setBackgroundColor(mMutedColor);
+                                                    mCollapsingToolbarLayout.setContentScrimColor(mMutedColor);
+                                                }
+                                            });
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
                             }
                         }
 
                         @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+                        public void onError() {
+
                         }
                     });
 
@@ -322,7 +345,7 @@ public class ArticleDetailFragment extends Fragment implements
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (fullBodyText!=null && !fullBodyText.isEmpty()) {
-            String bodyTextToBeShown = showFullBodyText ? fullBodyText : fullBodyText.substring(0, 2000) + "...";
+            String bodyTextToBeShown = fullBodyText.substring(0, 1500 * showMoreCounter) + "...";
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n\r\n", "<br/><br/>");
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\r\n", " ");
             bodyTextToBeShown = bodyTextToBeShown.replaceAll("\n", "<br/>");
@@ -334,6 +357,6 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SHOWING_FULL_BODY_TEXT_BOOLEAN,showFullBodyText);
+        outState.putInt(SHOW_MORE_COUNTER,showMoreCounter);
     }
 }
